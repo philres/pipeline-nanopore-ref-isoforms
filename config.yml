@@ -1,0 +1,53 @@
+---
+## General pipeline parameters:
+
+# Name of the pipeline:
+pipeline: "pipeline-nanopore-isoforms"
+# ABSOLUTE path to directory holding the working directory:
+workdir_top: "Workspaces"
+# Repository URL:
+repo: "https://github.com/nanoporetech/pipeline-nanopore-isoforms.git"
+
+## Pipeline-specific parameters:
+
+# Input genome
+genome_fasta: "evaluation/data/SIRV_150601a.fasta"
+
+existing_annotation: "evaluation/data/SIRV_isofroms.gtf"
+
+# cDNA or direct RNA reads in fastq format
+reads_fastq: "evaluation/data"
+
+concatenate: true
+
+read_qc: false
+
+run_pychopper: true
+
+pychopper_opts: "-q 0.3 -B 5000"
+
+# Extra option passed to minimap2 when generating index
+minimap_index_opts: "-k14"
+
+# Extra options passed to minimap2
+minimap2_opts: "-uf --splice-flank=no"
+# Add this for SIRV data:
+# "--splice-flank=no"
+
+# Minmum mapping quality
+minimum_mapping_quality: 10
+
+filter_internal_priming: false
+
+bundle_min_reads: 5000
+
+use_guide_annotation: true
+
+stringtie_opts: ""
+
+gffcompare_opts: ""
+
+# Threads
+threads: 50
+
+
