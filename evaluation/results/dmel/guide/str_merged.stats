@@ -1,0 +1,30 @@
+# gffcompare v0.11.2 | Command line was:
+#gffcompare -o str_merged -r /home/OXFORDNANOLABS/bsipos/gt/pipeline-nanopore-ref-isoforms/evaluation/pipeline-evaluation-dmel/data/Drosophila_melanogaster.BDGP6.28.99.gff3 -R str_merged.gff
+#
+
+#= Summary for dataset: str_merged.gff 
+#     Query mRNAs :   20417 in   12914 loci  (17716 multi-exon transcripts)
+#            (3862 multi-transcript loci, ~1.6 transcripts per locus)
+# Reference mRNAs :   25035 in   12106 loci  (22134 multi-exon)
+# Super-loci w/ reference transcripts:    12013
+#-----------------| Sensitivity | Precision  |
+        Base level:    80.5     |    95.4    |
+        Exon level:    76.7     |    90.2    |
+      Intron level:    75.5     |    95.5    |
+Intron chain level:    62.5     |    78.1    |
+  Transcript level:    64.8     |    79.4    |
+       Locus level:    92.8     |    87.1    |
+
+     Matching intron chains:   13841
+       Matching transcripts:   16221
+              Matching loci:   11231
+
+          Missed exons:    8564/65915	( 13.0%)
+           Novel exons:    1829/56909	(  3.2%)
+        Missed introns:    6915/50309	( 13.7%)
+         Novel introns:    1246/39774	(  3.1%)
+           Missed loci:       0/12106	(  0.0%)
+            Novel loci:     584/12914	(  4.5%)
+
+ Total union super-loci across all input datasets: 12597 
+20417 out of 20417 consensus transcripts written in str_merged.annotated.gtf (0 discarded as redundant)

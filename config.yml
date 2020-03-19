@@ -2,11 +2,11 @@
 ## General pipeline parameters:
 
 # Name of the pipeline:
-pipeline: "pipeline-nanopore-isoforms"
+pipeline: "pipeline-nanopore-ref-isoforms"
 # ABSOLUTE path to directory holding the working directory:
-workdir_top: "Workspaces"
+workdir_top: "evaluation"
 # Repository URL:
-repo: "https://github.com/nanoporetech/pipeline-nanopore-isoforms.git"
+repo: "https://github.com/nanoporetech/pipeline-nanopore-ref-isoforms.git"
 
 ## Pipeline-specific parameters:
 
@@ -18,36 +18,48 @@ existing_annotation: "evaluation/data/SIRV_isofroms.gtf"
 # cDNA or direct RNA reads in fastq format
 reads_fastq: "evaluation/data"
 
+# The path above is a directory, find and concatenate fastq files:
 concatenate: true
 
+# Not used in this release:
 read_qc: false
 
+# Process cDNA reads using pychopper, turn off for direct RNA:
 run_pychopper: true
 
-pychopper_opts: "-q 0.3 -B 5000"
+# Options passed to pychopper:
+pychopper_opts: ""
 
 # Extra option passed to minimap2 when generating index
 minimap_index_opts: "-k14"
 
 # Extra options passed to minimap2
-minimap2_opts: "-uf --splice-flank=no"
+minimap2_opts: "-uf "
 # Add this for SIRV data:
 # "--splice-flank=no"
 
 # Minmum mapping quality
-minimum_mapping_quality: 10
+minimum_mapping_quality: 40
 
-filter_internal_priming: false
+# Internal priming filter context size:
+poly_context: 24
 
-bundle_min_reads: 5000
+# Maximum allowed poly(A) length in the genome near the 3' end of mapping: 
+max_poly_run: 8
 
+# Minimium number of reads in BAM bundles:
+bundle_min_reads: 50000
+
+# Use exiting annotation as guide for stringtie:
 use_guide_annotation: true
 
-stringtie_opts: ""
+# Options passed to stringtie:
+stringtie_opts: " --conservative "
 
-gffcompare_opts: ""
+# Options passed to gffcompare:
+gffcompare_opts: " -R "
 
-# Threads
+# Threads:
 threads: 50
 
 
