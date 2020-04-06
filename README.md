@@ -51,7 +51,9 @@ snakemake --use-conda -j <num_cores> all
 Results
 =======
 
-## Performance on a D. melanogaster PCS109 data
+## Performance on a Drosphilia melanogaster with cDNA-PCR Sequencing (SQK-PCS109) data
+
+The Oxford Nanopore Technologies ![protocol for SQK-PCS109](https://community.nanoporetech.com/protocols/cdna-pcr-sequencing_sqk-pcs109) was with the ![submission](https://www.ebi.ac.uk/ena/data/view/SAMEA6066416) so that the results below could be generated.
 
 ### Performance with guide annotation
 
