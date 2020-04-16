@@ -1,4 +1,3 @@
-
 import os
 from os import path
 
@@ -37,21 +36,30 @@ rule preprocess_reads:
         pq = "processed_reads/input_reads.fq",
         flq = "processed_reads/full_length_reads.fq",
     params:
-        pc = config["run_pychopper"],
+        pc = "True" if config["run_pychopper"] else "False",
         read_stats = config["read_qc"],
         pc_opts = config["pychopper_opts"],
-        concat = config["concatenate"],
+        concat = "True" if config["concatenate"] else "False",
     threads: config["threads"]
-    run:
-        shell("mkdir -p processed_reads")
-        if params.concat:
-            shell("find %s  -regextype posix-extended -regex '.*\.(fastq|fq)$' -exec cat {{}} \\; > processed_reads/input_reads.fq" % str(input.fq))
-        else:
-            shell("ln -s `realpath %s` processed_reads/input_reads.fq" % str(input.fq))
-        if params.pc:
-           shell("cd processed_reads; cdna_classifier.py -t %d %s input_reads.fq full_length_reads.fq" % (threads, params.pc_opts))
-        else:
-            shell("ln -s `realpath processed_reads/input_reads.fq` processed_reads/full_length_reads.fq")
+    conda: "env.yml"
+    shell:
+        """
+        mkdir -p processed_reads;
+
+        if [[ {params.concat} == "True" ]];
+        then
+            find {input.fq}  -regextype posix-extended -regex '.*\.(fastq|fq)$' -exec cat {{}} \\; > processed_reads/input_reads.fq
+        else
+            ln -s `realpath {input.fq}` processed_reads/input_reads.fq
+        fi
+
+        if [[ {params.pc} == "True" ]];
+        then
+            cd processed_reads; cdna_classifier.py -t {threads} {params.pc_opts} input_reads.fq full_length_reads.fq
+        else
+            ln -s `realpath processed_reads/input_reads.fq` processed_reads/full_length_reads.fq
+        fi
+        """
 
 rule build_minimap_index:
     input:
