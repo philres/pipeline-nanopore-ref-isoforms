@@ -91,9 +91,9 @@ rule map_reads:
     threads: config["threads"]
     shell:"""
     minimap2 -t {threads} -ax splice {params.opts} {input.index} {input.fastq}\
-    | samtools view -q {params.min_mq} -F 2304 -Sb\
-    | seqkit bam -j {threads} -T '{params.flt}' -\
-    | samtools sort -@ {threads} - -o {output.bam};
+    | samtools view -q {params.min_mq} -F 2304 -Sb -\
+    | seqkit bam -j {threads} -x -T '{params.flt}' -\
+    | samtools sort -@ {threads} -o {output.bam} -;
     samtools index {output.bam}
     """
 

@@ -21,6 +21,8 @@ parser = argparse.ArgumentParser(
 parser.add_argument(
     '-r', metavar='report_pdf', type=str, help="Report PDF (plot_gffcmp_stats.pdf).", default="plot_gffcmp_stats.pdf")
 parser.add_argument(
+    '-t', metavar='tracking_tsv', type=str, help="Report PDF (plot_gffcmp_stats.pdf).", default=None)
+parser.add_argument(
     'input', metavar='input_txt', type=str, help="Input gffcompare stats file.")
 
 
