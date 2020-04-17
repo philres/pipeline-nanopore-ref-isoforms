@@ -334,6 +334,10 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     stats, match, miss, novel, total = parse_gffcmp_stats(args.input)
+    tracking = pd.read_csv(args.t, sep="\t", header=None, usecols=[0, 3], names=['Count', 'Overlaps'])
+
+    tracking = tracking.groupby("Overlaps").count().reset_index()
+    tracking = tracking.sort_values("Overlaps")
 
     plotter = Report(args.r)
 
@@ -376,6 +380,35 @@ if __name__ == '__main__':
     plotter.pages.savefig()
 
     novel.plot(kind='barh', subplots=True, legend=False, sharex=False)
+    plt.tight_layout()
+    plotter.pages.savefig()
+
+    def fix_names(s):
+        names = {'=': 'ExactMatch:=',
+                    'c': 'Contained:c',
+                    'k': 'ReverseContained:k',
+                    'm': 'RetainedIntron:m',
+                    'n': 'PartRetainedIntron:n',
+                    'j': 'PartialMatch:j',
+                    'e': 'TransFragMatch:e',
+                    's': 'OppositeMatch:s',
+                    'o': 'OtherSameStrand:o',
+                    'x': 'ExonicOpposite:o',
+                    'y': 'RefInIntrons:y',
+                    'p': 'PolymeraseRunon:p',
+                    'r': 'Repeat:r',
+                    'u': 'Intergenic:u',
+                 }
+        return names[s]
+
+    # Plot overlaps panel:
+    tracking.Overlaps = tracking.Overlaps.apply(fix_names)
+    tracking = tracking.set_index("Overlaps")
+    tracking.plot(kind='bar', title="Overlaps detected by gffcompare", colormap='Paired')
+    plt.tight_layout()
+    plotter.pages.savefig()
+    tracking["Percent"] = tracking.Count * 100 / tracking.Count.sum()
+    tracking[["Percent"]].plot(kind='bar', title="Overlaps detected by gffcompare", colormap='Paired')
     plt.tight_layout()
     plotter.pages.savefig()
 
