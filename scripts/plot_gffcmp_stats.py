@@ -398,6 +398,7 @@ if __name__ == '__main__':
                     'p': 'PolymeraseRunon:p',
                     'r': 'Repeat:r',
                     'u': 'Intergenic:u',
+                    'i': 'FullyIntronic:i',
                  }
         return names[s]
 
