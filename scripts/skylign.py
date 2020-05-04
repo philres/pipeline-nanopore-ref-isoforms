@@ -19,16 +19,16 @@ if __name__ == '__main__':
     files = {'file': cont}
     data = [("processing", "hmm")]
     head = {"Accept": "application/json"}
-    print("Submiting profile HMM to SkyLign:", args.input)
+    print("Submiting profile HMM to SkyLign:", args.input, file=sys.stderr)
     res = rq.post(URL, files=files, data=data, headers=head)
     if res.status_code != rq.codes.ok:
-        print("Failed to submit HMM to SkyLign: ", res.content)
+        print("Failed to submit HMM to SkyLign: ", res.content, file=sys.stderr)
         sys.exit(1)
     png_url = json.loads(res.content)["url"]
     png_res = rq.get(png_url, headers={"Accept": "image/png"})
     if png_res.status_code != rq.codes.ok:
-        print("Failed to download HMM logo to SkyLign: ", png_res.content)
+        print("Failed to download HMM logo to SkyLign: ", png_res.content, file=sys.stderr)
         sys.exit(1)
     with open(args.r, 'wb') as fh:
         fh.write(png_res.content)
-    print("HMM logo written to:", args.r)
+    print("HMM logo written to:", args.r, file=sys.stderr)
