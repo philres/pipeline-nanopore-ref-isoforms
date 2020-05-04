@@ -21,9 +21,6 @@ reads_fastq: "evaluation/data"
 # The path above is a directory, find and concatenate fastq files:
 concatenate: true
 
-# Not used in this release:
-read_qc: false
-
 # Process cDNA reads using pychopper, turn off for direct RNA:
 run_pychopper: true
 

@@ -37,7 +37,6 @@ rule preprocess_reads:
         flq = "processed_reads/full_length_reads.fq",
     params:
         pc = "True" if config["run_pychopper"] else "False",
-        read_stats = config["read_qc"],
         pc_opts = config["pychopper_opts"],
         concat = "True" if config["concatenate"] else "False",
     threads: config["threads"]
