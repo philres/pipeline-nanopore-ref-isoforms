@@ -130,6 +130,7 @@ rule map_reads:
                 spoa -r 1 -l 1 $fas | sed '1d' | awk '{{print ">" NR "\\n" $1}}' > ${{fas}}_aln
                 hmmbuild -n $NAME --dna ${{NAME}}.hmm ${{fas}}_aln > /dev/null
                 hmmlogo ${{NAME}}.hmm > ${{NAME}}.logo
+                {SNAKEDIR}/scripts/skylign.py -r ${{NAME}}.png ${{NAME}}.hmm
             fi
         done
         rm alignments/context*fasta*
