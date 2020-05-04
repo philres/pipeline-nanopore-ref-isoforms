@@ -103,7 +103,7 @@ rule map_reads:
     if [[ {params.context_plt} -gt 0 ]];
     then
         seqkit bam -j {threads} -T '{params.dump}' {output.bam} >/dev/null
-        tail +2 alignments/context.tsv | shuf - > alignments/context_shuff.tsv
+        tail -n +2 alignments/context.tsv | shuf - > alignments/context_shuff.tsv
         csvtk -t -H filter2 -f '$3 == 1' alignments/context_shuff.tsv > alignments/context_shuff_plus.tsv
         LINES_PLUS={params.context_plt}
         TOTAL_PLUS=`wc -l alignments/context_shuff_plus.tsv | cut -d$' ' -f 1`
