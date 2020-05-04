@@ -99,6 +99,12 @@ rule map_reads:
     | samtools sort -@ {threads} -o {output.bam} -;
     samtools index {output.bam}
 
+    if [[ -s alignments/internal_priming_fail.tsv ]];
+    then
+        tail -n +2 alignments/internal_priming_fail.tsv | awk '{{print ">" $1 "\\n" $4 }}' - > alignments/context_internal_priming_fail_start.fasta
+        tail -n +2 alignments/internal_priming_fail.tsv | awk '{{print ">" $1 "\\n" $6 }}' - > alignments/context_internal_priming_fail_end.fasta
+    fi
+
     if [[ {params.context_plt} -gt 0 ]];
     then
         seqkit bam -j {threads} -T '{params.dump}' {output.bam} >/dev/null
@@ -122,19 +128,20 @@ rule map_reads:
         head -n $LINES_MINUS alignments/context_shuff_minus.tsv | awk '{{print ">" $1 "\\n" $4 }}' - > alignments/context_shuff_minus_start.fasta
         head -n $LINES_MINUS alignments/context_shuff_minus.tsv | awk '{{print ">" $1 "\\n" $6 }}' - > alignments/context_shuff_minus_end.fasta
         rm alignments/context*.tsv
-        for fas in alignments/context*.fasta;
-        do
-            if [[ -s $fas ]];
-            then
-                NAME="${{fas%.*}}"
-                spoa -r 1 -l 1 $fas | sed '1d' | awk '{{print ">" NR "\\n" $1}}' > ${{fas}}_aln
-                hmmbuild -n $NAME --dna ${{NAME}}.hmm ${{fas}}_aln > /dev/null
-                hmmlogo ${{NAME}}.hmm > ${{NAME}}.logo
-                {SNAKEDIR}/scripts/skylign.py -r ${{NAME}}.png `realpath ${{NAME}}.hmm`
-            fi
-        done
-        rm alignments/context*fasta*
     fi
+
+    for fas in alignments/context*.fasta;
+    do
+        if [[ -s $fas ]];
+        then
+            NAME="${{fas%.*}}"
+            spoa -r 1 -l 1 $fas | sed '1d' | awk '{{print ">" NR "\\n" $1}}' > ${{fas}}_aln
+            hmmbuild -n $NAME --dna ${{NAME}}.hmm ${{fas}}_aln > /dev/null
+            hmmlogo ${{NAME}}.hmm > ${{NAME}}.logo
+            {SNAKEDIR}/scripts/skylign.py -r ${{NAME}}.png `realpath ${{NAME}}.hmm`
+        fi
+    done
+    rm alignments/context*fasta*
     """
 
 skip_bundles = "NO"
