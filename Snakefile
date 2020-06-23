@@ -117,7 +117,9 @@ rule map_reads:
             LINES_PLUS=$TOTAL_PLUS
         fi
         head -n $LINES_PLUS alignments/context_shuff_plus.tsv | awk '{{print ">" $1 "\\n" $4 }}' - > alignments/context_shuff_plus_start.fasta
-        head -n $LINES_PLUS alignments/context_shuff_plus.tsv | awk '{{print ">" $1 "\\n" $6 }}' - > alignments/context_shuff_plus_end.fasta
+        (seqkit sana alignments/context_shuff_plus_start.fasta.tmp 2>/dev/null) > alignments/context_shuff_plus_start.fasta || true
+        head -n $LINES_PLUS alignments/context_shuff_plus.tsv | awk '{{print ">" $1 "\\n" $6 }}' - > alignments/context_shuff_plus_end.fasta.tmp
+        (seqkit sana alignments/context_shuff_plus_end.fasta.tmp 2>/dev/null) > alignments/context_shuff_plus_end.fasta || true
         csvtk -t -H filter2 -f '$3 == "-1"' alignments/context_shuff.tsv > alignments/context_shuff_minus.tsv
         LINES_MINUS={params.context_plt}
         TOTAL_MINUS=`wc -l alignments/context_shuff_minus.tsv| cut -d$' ' -f 1`
@@ -125,9 +127,12 @@ rule map_reads:
         then
             LINES_MINUS=$TOTAL_MINUS
         fi
-        head -n $LINES_MINUS alignments/context_shuff_minus.tsv | awk '{{print ">" $1 "\\n" $4 }}' - > alignments/context_shuff_minus_start.fasta
-        head -n $LINES_MINUS alignments/context_shuff_minus.tsv | awk '{{print ">" $1 "\\n" $6 }}' - > alignments/context_shuff_minus_end.fasta
+        head -n $LINES_MINUS alignments/context_shuff_minus.tsv | awk '{{print ">" $1 "\\n" $4 }}' - > alignments/context_shuff_minus_start.fasta.tmp
+        (seqkit sana alignments/context_shuff_minus_start.fasta.tmp 2>/dev/null) > alignments/context_shuff_minus_start.fasta || true
+        head -n $LINES_MINUS alignments/context_shuff_minus.tsv | awk '{{print ">" $1 "\\n" $6 }}' - > alignments/context_shuff_minus_end.fasta.tmp
+        (seqkit sana alignments/context_shuff_minus_end.fasta.tmp 2>/dev/null) > alignments/context_shuff_minus_end.fasta || true
         rm alignments/context*.tsv
+        rm alignments/*.tmp
     fi
 
     for fas in alignments/context*.fasta;
@@ -194,7 +199,7 @@ rule run_stringtie:
         then
             G_FLAG="-G {params.ann}"
         fi
-        stringtie --rf $G_FLAG -l {params.trp} -L -v -p {threads} {params.opts} -o {output.gff} {input.bundle}
+        stringtie --rf $G_FLAG -l {params.trp} -L -v -p {threads} {params.opts} -o {output.gff} {input.bundle} 2>/dev/null
         """
 
 def gff_bundle_list(wildcards):
