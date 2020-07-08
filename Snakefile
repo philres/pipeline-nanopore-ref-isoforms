@@ -84,6 +84,7 @@ rule map_reads:
        fastq = rules.preprocess_reads.output.flq,
     output:
        bam = "alignments/reads_aln_sorted.bam",
+       stats = "alignments/read_aln_stats.tsv",
     params:
         opts = config["minimap2_opts"],
         min_mq = config["minimum_mapping_quality"],
@@ -98,6 +99,8 @@ rule map_reads:
     | seqkit bam -j {threads} -x -T '{params.flt}' -\
     | samtools sort -@ {threads} -o {output.bam} -;
     samtools index {output.bam}
+
+    (seqkit bam -s -j {threads} {output.bam} 2>&1)  | tee {output.stats}
 
     if [[ -s alignments/internal_priming_fail.tsv ]];
     then
@@ -117,9 +120,9 @@ rule map_reads:
             LINES_PLUS=$TOTAL_PLUS
         fi
         head -n $LINES_PLUS alignments/context_shuff_plus.tsv | awk '{{print ">" $1 "\\n" $4 }}' - > alignments/context_shuff_plus_start.fasta
-        (seqkit sana alignments/context_shuff_plus_start.fasta.tmp 2>/dev/null) > alignments/context_shuff_plus_start.fasta || true
+        (seqkit sana -i fasta alignments/context_shuff_plus_start.fasta.tmp 2>/dev/null) > alignments/context_shuff_plus_start.fasta || true
         head -n $LINES_PLUS alignments/context_shuff_plus.tsv | awk '{{print ">" $1 "\\n" $6 }}' - > alignments/context_shuff_plus_end.fasta.tmp
-        (seqkit sana alignments/context_shuff_plus_end.fasta.tmp 2>/dev/null) > alignments/context_shuff_plus_end.fasta || true
+        (seqkit sana -i fasta alignments/context_shuff_plus_end.fasta.tmp 2>/dev/null) > alignments/context_shuff_plus_end.fasta || true
         csvtk -t -H filter2 -f '$3 == "-1"' alignments/context_shuff.tsv > alignments/context_shuff_minus.tsv
         LINES_MINUS={params.context_plt}
         TOTAL_MINUS=`wc -l alignments/context_shuff_minus.tsv| cut -d$' ' -f 1`
@@ -128,9 +131,9 @@ rule map_reads:
             LINES_MINUS=$TOTAL_MINUS
         fi
         head -n $LINES_MINUS alignments/context_shuff_minus.tsv | awk '{{print ">" $1 "\\n" $4 }}' - > alignments/context_shuff_minus_start.fasta.tmp
-        (seqkit sana alignments/context_shuff_minus_start.fasta.tmp 2>/dev/null) > alignments/context_shuff_minus_start.fasta || true
+        (seqkit sana -i fasta alignments/context_shuff_minus_start.fasta.tmp 2>/dev/null) > alignments/context_shuff_minus_start.fasta || true
         head -n $LINES_MINUS alignments/context_shuff_minus.tsv | awk '{{print ">" $1 "\\n" $6 }}' - > alignments/context_shuff_minus_end.fasta.tmp
-        (seqkit sana alignments/context_shuff_minus_end.fasta.tmp 2>/dev/null) > alignments/context_shuff_minus_end.fasta || true
+        (seqkit sana -i fasta alignments/context_shuff_minus_end.fasta.tmp 2>/dev/null) > alignments/context_shuff_minus_end.fasta || true
         rm alignments/context*.tsv
         rm alignments/*.tmp
     fi
@@ -148,6 +151,19 @@ rule map_reads:
     done
     rm alignments/context*fasta*
     """
+
+
+rule plot_aln_stats:
+    input:
+        stats = rules.map_reads.output.stats
+    output:
+        pdf = "alignments/read_aln_stats.pdf"
+    conda: "env.yml"
+    threads: config["threads"]
+    shell:"""
+    {SNAKEDIR}/scripts/plot_aln_stats.py {input.stats} -r {output.pdf}
+    """
+
 
 skip_bundles = "NO"
 if config["bundle_min_reads"] is False:
@@ -272,6 +288,7 @@ rule all: ## run the whole pipeline
         ver = rules.dump_versions.output.ver,
         index = rules.build_minimap_index.output.index,
         aligned_reads = rules.map_reads.output.bam,
+        stats = rules.plot_aln_stats.output.pdf,
         bam_bundles = rules.split_bam.output,
         str_gff = rules.merge_gff_bundles.output,
         cmp_dir = rules.run_gffcompare.output.cmp_dir,
