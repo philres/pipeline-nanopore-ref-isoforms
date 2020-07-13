@@ -100,7 +100,7 @@ rule map_reads:
     | samtools sort -@ {threads} -o {output.bam} -;
     samtools index {output.bam}
 
-    (seqkit bam -s -j {threads} {output.bam} 2>&1)  | tee {output.stats}
+    ((seqkit bam -s -j {threads} {output.bam} 2>&1)  | tee {output.stats} ) || true
 
     if [[ -s alignments/internal_priming_fail.tsv ]];
     then
@@ -110,7 +110,7 @@ rule map_reads:
 
     if [[ {params.context_plt} -gt 0 ]];
     then
-        seqkit bam -j {threads} -T '{params.dump}' {output.bam} >/dev/null
+        (seqkit bam -j {threads} -T '{params.dump}' {output.bam} >/dev/null) || true
         tail -n +2 alignments/context.tsv | shuf - > alignments/context_shuff.tsv
         csvtk -t -H filter2 -f '$3 == 1' alignments/context_shuff.tsv > alignments/context_shuff_plus.tsv
         LINES_PLUS={params.context_plt}
