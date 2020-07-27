@@ -77,7 +77,7 @@ HMM logos are generated from the context of the start and end positions of the r
 
 The logo of the context of aligment start positions of a random sample of reads. Note the pattern reminescent of a [TATA-box](https://en.wikipedia.org/wiki/TATA_box) at the beggining.
 
-![dmel_plus_end](https://github.com/nanoporetech/pipeline-nanopore-ref-isoforms/raw/master/evaluation/results/dmel/context_shuff_plus_start.png)
+![dmel_plus_end](https://github.com/nanoporetech/pipeline-nanopore-ref-isoforms/raw/master/evaluation/results/dmel/context_shuff_plus_end.png)
 
 The logo of the context of aligment end positions of a random sample of reads. Note that the region is AT rich, which is a characteristic of [polyadenylation signals](https://en.wikipedia.org/wiki/Polyadenylation).
 
