@@ -59,7 +59,7 @@ The data used for benchmarking generated with the Oxford Nanopore Technologies [
 
 Run `./run_evaluation_dmel.sh` to reproduce these results.
 
-![dmel_guide](https://raw.githubusercontent.com/nanoporetech/pipeline-nanopore-ref-isoforms/master/evaluation/results/dmel/guide/str_gffcmp_report_f.png)
+![dmel_guide](https://raw.githubusercontent.com/nanoporetech/pipeline-nanopore-ref-isoforms/raw/master/evaluation/results/dmel/guide/str_gffcmp_report_f.png)
 
 See [this folder](https://github.com/nanoporetech/pipeline-nanopore-ref-isoforms/tree/master/evaluation/results/dmel/guide) for raw gffcompare output and the full PDF report.
 
